@@ -3,16 +3,16 @@ import { useRefFrom } from 'use-ref-from';
 
 import removeInline from './private/removeInline';
 
-type ObserverFunction<T> = (observation: T) => void;
+type Listener<T> = (value: T) => void;
 
 type ContextType<T> = {
-  addObserver: (observer: ObserverFunction<T>) => void;
-  next: ObserverFunction<T>;
-  removeObserver: (observer: ObserverFunction<T>) => void;
+  addListener: (listener: Listener<T>) => void;
+  propagate: Listener<T>;
+  removeListener: (listener: Listener<T>) => void;
 };
 
 export default function createPropagation<T>() {
-  type Fn = ObserverFunction<T>;
+  type Fn = Listener<T>;
 
   const Context = createContext<ContextType<T>>(
     new Proxy({} as ContextType<T>, {
@@ -23,30 +23,30 @@ export default function createPropagation<T>() {
   );
 
   const Provider = ({ children }: Readonly<{ children?: ReactNode | undefined }>) => {
-    const observerRef = useRef<Fn[]>([]);
+    const listenersRef = useRef<Fn[]>([]);
 
-    const addObserver = useCallback(
-      (observer: Fn): void => {
-        observerRef.current.push(observer);
+    const addListener = useCallback(
+      (listener: Fn): void => {
+        listenersRef.current.push(listener);
       },
-      [observerRef]
+      [listenersRef]
     );
 
-    const removeObserver = useCallback(
-      (observer: Fn): void => removeInline(observerRef.current, observer),
-      [observerRef]
+    const propagate = useMemo<Fn>(
+      () => (value: T) => {
+        listenersRef.current.forEach(listener => listener(value));
+      },
+      [listenersRef]
     );
 
-    const next = useMemo<Fn>(
-      () => (observation: T) => {
-        observerRef.current.forEach(observer => observer(observation));
-      },
-      [observerRef]
+    const removeListener = useCallback(
+      (listener: Fn): void => removeInline(listenersRef.current, listener),
+      [listenersRef]
     );
 
     const context = useMemo<ContextType<T>>(
-      () => ({ addObserver, next, removeObserver }),
-      [addObserver, next, removeObserver]
+      () => ({ addListener, propagate, removeListener }),
+      [addListener, propagate, removeListener]
     );
 
     return <Context.Provider value={context}>{children}</Context.Provider>;
@@ -54,18 +54,18 @@ export default function createPropagation<T>() {
 
   return {
     Provider,
-    useListen: (observer: Fn) => {
-      const { addObserver, removeObserver } = useContext(Context);
-      const observerRef = useRefFrom(observer);
+    useListen: (listener: Fn) => {
+      const { addListener, removeListener } = useContext(Context);
+      const listenerRef = useRefFrom(listener);
 
       useEffect(() => {
-        const wrappingObserver = (observation: T) => observerRef.current(observation);
+        const wrappingListener = (value: T) => listenerRef.current(value);
 
-        addObserver(wrappingObserver);
+        addListener(wrappingListener);
 
-        return () => removeObserver(wrappingObserver);
-      }, [addObserver, observerRef, removeObserver]);
+        return () => removeListener(wrappingListener);
+      }, [addListener, listenerRef, removeListener]);
     },
-    usePropagate: () => useContext(Context).next
+    usePropagate: () => useContext(Context).propagate
   };
 }
