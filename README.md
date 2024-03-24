@@ -6,7 +6,7 @@ Propagates an event to multiple subscribers using React hooks.
 
 This pattern is useful for propagating an event to multiple nodes via a callback mechanism.
 
-Unlike setting a value in a [context](https://react.dev/reference/react/createContext), data will be passed via callback function. Subscribe can save the value into state and re-render.
+Unlike setting a value in a [context](https://react.dev/reference/react/createContext), data will be passed via callback function. Subscriber can save the value into state and re-render as needed.
 
 ## How to use
 
