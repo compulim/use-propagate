@@ -15,6 +15,31 @@ describe('A propagation', () => {
     ({ Provider, useListen, usePropagate } = createPropagation<number>());
   });
 
+  describe('', () => {
+    beforeEach(() => jest.spyOn(console, 'error').mockImplementation(jest.fn()));
+    afterEach(() => jest.restoreAllMocks());
+
+    test('calling useListen() without <Provider> should throw', () => {
+      expect(() => {
+        renderHook(() => {
+          useListen(() => {});
+
+          return false;
+        });
+      }).toThrow('This hook can only used under its corresponding <Provider>.');
+    });
+
+    test('calling usePropagate() without <Provider> should throw', () => {
+      expect(() => {
+        renderHook(() => {
+          usePropagate()(0);
+
+          return false;
+        });
+      }).toThrow('This hook can only used under its corresponding <Provider>.');
+    });
+  });
+
   describe('when render initially', () => {
     let listener: jest.Mock<void, [number]>;
     let result: RenderHookResult<void, Props>;
