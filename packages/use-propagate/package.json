@@ -30,8 +30,8 @@
     "bump:babel": "npm run bump:babel:commonjs && npm run bump:babel:esmodules",
     "bump:babel:commonjs": "cat babel.commonjs.config.json | jq --arg CORE_JS_VERSION `[ -f node_modules/@babel/runtime-corejs3/package.json ] && cat node_modules/@babel/runtime-corejs3/package.json | jq -r .version || cat ../../node_modules/@babel/runtime-corejs3/package.json | jq -r .version` '(.plugins[] | select(.[0] == \"@babel/plugin-transform-runtime\"))[1].version = $CORE_JS_VERSION' | prettier --parser json > babel.commonjs.config.json.tmp && mv babel.commonjs.config.json.tmp babel.commonjs.config.json",
     "bump:babel:esmodules": "cat babel.esmodules.config.json | jq --arg CORE_JS_VERSION `[ -f node_modules/@babel/runtime-corejs3/package.json ] && cat node_modules/@babel/runtime-corejs3/package.json | jq -r .version || cat ../../node_modules/@babel/runtime-corejs3/package.json | jq -r .version` '(.plugins[] | select(.[0] == \"@babel/plugin-transform-runtime\"))[1].version = $CORE_JS_VERSION' | prettier --parser json > babel.esmodules.config.json.tmp && mv babel.esmodules.config.json.tmp babel.esmodules.config.json",
-    "bump:dev": "PACKAGES_TO_BUMP=$(cat package.json | jq -r '.localPeerDependencies // {} as $L | .devDependencies // {} | to_entries | map(select(.key as $K | $L | has($K) | not)) | map(.key + \"@latest\") | join(\" \")') && [ ! -z \"$PACKAGES_TO_BUMP\" ] && npm install $PACKAGES_TO_BUMP || true",
-    "bump:prod": "PACKAGES_TO_BUMP=$(cat package.json | jq -r '.localPeerDependencies // {} as $L | .dependencies // {} | to_entries | map(select(.key as $K | $L | has($K) | not)) | map(.key + \"@latest\") | join(\" \")') && [ ! -z \"$PACKAGES_TO_BUMP\" ] && npm install $PACKAGES_TO_BUMP || true",
+    "bump:dev": "PACKAGES_TO_BUMP=$(cat package.json | jq -r '(.localPeerDependencies // {}) as $L | (.devDependencies // {}) | to_entries | map(select(.key as $K | $L | has($K) | not)) | map(.key + \"@latest\") | join(\" \")') && [ ! -z \"$PACKAGES_TO_BUMP\" ] && npm install $PACKAGES_TO_BUMP || true",
+    "bump:prod": "PACKAGES_TO_BUMP=$(cat package.json | jq -r '(.localPeerDependencies // {}) as $L | (.dependencies // {}) | to_entries | map(select(.key as $K | $L | has($K) | not)) | map(.key + \"@latest\") | join(\" \")') && [ ! -z \"$PACKAGES_TO_BUMP\" ] && npm install $PACKAGES_TO_BUMP || true",
     "postscaffold": "npm run bump:babel",
     "precommit": "npm run precommit:eslint && npm run precommit:typescript:production && npm run precommit:typescript:test",
     "precommit:eslint": "eslint ./src/",
@@ -59,25 +59,25 @@
     "react": ">=16.9.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.4",
-    "@babel/core": "^7.23.6",
-    "@babel/plugin-transform-runtime": "^7.23.6",
-    "@babel/preset-env": "^7.23.6",
-    "@babel/preset-react": "^7.23.3",
-    "@babel/preset-typescript": "^7.23.3",
-    "@testing-library/react": "^14.1.2",
+    "@babel/cli": "^7.24.1",
+    "@babel/core": "^7.24.3",
+    "@babel/plugin-transform-runtime": "^7.24.3",
+    "@babel/preset-env": "^7.24.3",
+    "@babel/preset-react": "^7.24.1",
+    "@babel/preset-typescript": "^7.24.1",
+    "@testing-library/react": "^14.2.2",
     "@tsconfig/recommended": "^1.0.3",
-    "@tsconfig/strictest": "^2.0.2",
-    "@types/jest": "^29.5.11",
-    "@types/react": "^18.2.45",
+    "@tsconfig/strictest": "^2.0.3",
+    "@types/jest": "^29.5.12",
+    "@types/react": "^18.2.69",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "react": "^18.2.0",
     "react-test-renderer": "^18.2.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.3"
   },
   "dependencies": {
-    "@babel/runtime-corejs3": "^7.23.6",
+    "@babel/runtime-corejs3": "^7.24.1",
     "use-ref-from": "^0.0.3"
   }
 }
