@@ -13,13 +13,38 @@ Unlike setting a value in a [context](https://react.dev/reference/react/createCo
 ```tsx
 import { createPropagation } from 'use-propagate';
 
-const { Provider, usePropagate, useListen } = createPropagation<string>();
+const { Provider, useListen, usePropagate } = createPropagation<void>();
 
-const Input = () => {
+const FocusButton = () => {
   const propagate = usePropagate();
 
-  return <input type="text" />;
+  // When clicked, it will trigger all subscribers.
+  const handleClick = useCallback(() => propagate(), [propagate]);
+
+  return (
+    <button autoFocus={true} onClick={handleClick}>
+      Tap to focus to the text box
+    </button>
+  );
 };
+
+const TextBox = () => {
+  const ref = useRef<HTMLInputElement>(null);
+
+  // When being triggered, send the focus to the text box.
+  const handleListen = useCallback(() => ref.current?.focus(), [ref]);
+
+  useListen(handleListen);
+
+  return <input ref={ref} type="text" />;
+};
+
+render(
+  <Provider>
+    <FocusButton />
+    <TextBox />
+  </Provider>
+);
 ```
 
 ## API

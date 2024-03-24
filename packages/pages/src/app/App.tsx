@@ -25,13 +25,11 @@ const TextBox = () => {
   return <input ref={ref} type="text" />;
 };
 
-const App = () => {
-  return (
-    <Provider>
-      <FocusButton />
-      <TextBox />
-    </Provider>
-  );
-};
+const App = () => (
+  <Provider>
+    <FocusButton />
+    <TextBox />
+  </Provider>
+);
 
 export default App;
