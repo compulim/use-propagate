@@ -1,7 +1,7 @@
 {
   "name": "use-propagate",
   "version": "0.0.0-0",
-  "description": "Propagates an event to subscribed children.",
+  "description": "Propagates an event to multiple subscribers using React hooks.",
   "files": [
     "./lib/"
   ],
