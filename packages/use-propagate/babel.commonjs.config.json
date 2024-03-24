@@ -1,0 +1,36 @@
+{
+  "extends": "./babel.production.config.json",
+  "plugins": [
+    [
+      "@babel/plugin-transform-runtime",
+      {
+        "corejs": 3,
+        "version": "7.23.6"
+      }
+    ]
+  ],
+  "presets": [
+    [
+      "@babel/preset-react",
+      {
+        "runtime": "automatic"
+      }
+    ],
+    [
+      "@babel/preset-typescript",
+      {
+        "allowDeclareFields": true
+      }
+    ],
+    [
+      "@babel/preset-env",
+      {
+        "modules": "commonjs",
+        "targets": {
+          "ie": "11"
+        }
+      }
+    ]
+  ],
+  "sourceMaps": true
+}

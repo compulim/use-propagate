@@ -1,0 +1,33 @@
+{
+  "name": "use-propagate-pages",
+  "version": "0.0.0-0",
+  "description": "",
+  "scripts": {
+    "build": "esbuild --bundle --entry-names=[name]/[ext]/main --jsx=automatic --minify --outdir=./public/static/ --sourcemap app=./src/app/index.tsx",
+    "bump": "npm run bump:prod && npm run bump:dev && npm run bump:auditfix",
+    "bump:auditfix": "npm audit fix || exit 0",
+    "bump:dev": "PACKAGES_TO_BUMP=$(cat package.json | jq -r '.localPeerDependencies // {} as $L | .devDependencies // {} | to_entries | map(select(.key as $K | $L | has($K) | not)) | map(.key + \"@latest\") | join(\" \")') && [ ! -z \"$PACKAGES_TO_BUMP\" ] && npm install $PACKAGES_TO_BUMP || true",
+    "bump:prod": "PACKAGES_TO_BUMP=$(cat package.json | jq -r '.localPeerDependencies // {} as $L | .dependencies // {} | to_entries | map(select(.key as $K | $L | has($K) | not)) | map(.key + \"@latest\") | join(\" \")') && [ ! -z \"$PACKAGES_TO_BUMP\" ] && npm install $PACKAGES_TO_BUMP || true",
+    "precommit": "npm run precommit:typescript",
+    "precommit:typescript": "tsc --project ./src/tsconfig.json",
+    "reinstall": "rm -r node_modules package-lock.json && npm install",
+    "start": "npm run build -- --servedir=./public"
+  },
+  "author": "William Wong (https://github.com/compulim)",
+  "license": "MIT",
+  "localPeerDependencies": {
+    "use-propagate": "^0.0.0-0"
+  },
+  "devDependencies": {
+    "@tsconfig/strictest": "^2.0.2",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "esbuild": "^0.19.2",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "use-propagate": "^0.0.0-0"
+  }
+}

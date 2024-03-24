@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "noEmit": false
+  },
+  "exclude": ["**/*.spec.*", "**/*.test.*", "__tests__/**/*"],
+  "extends": "@tsconfig/strictest/tsconfig.json"
+}
