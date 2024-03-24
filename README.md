@@ -10,15 +10,20 @@ Unlike setting a value in a [context](https://react.dev/reference/react/createCo
 
 ## How to use
 
+> [Live demo](https://compulim.github.io/use-propagate)
+
+The following code snippet would send the focus to the text box when the button is tapped.
+
 ```tsx
 import { createPropagation } from 'use-propagate';
 
+// Creates a namespace for the propagation. This should be placed outside of the component.
 const { Provider, useListen, usePropagate } = createPropagation<void>();
 
 const FocusButton = () => {
   const propagate = usePropagate();
 
-  // When clicked, it will trigger all subscribers.
+  // When tapped, it will trigger all subscribers.
   const handleClick = useCallback(() => propagate(), [propagate]);
 
   return (
@@ -31,9 +36,10 @@ const FocusButton = () => {
 const TextBox = () => {
   const ref = useRef<HTMLInputElement>(null);
 
-  // When being triggered, send the focus to the text box.
+  // When the callback is called, send the focus to the text box.
   const handleListen = useCallback(() => ref.current?.focus(), [ref]);
 
+  // Listens to the propagation.
   useListen(handleListen);
 
   return <input ref={ref} type="text" />;
@@ -52,8 +58,8 @@ render(
 ```ts
 export function createPropagation<T>(): {
   Provider: ComponentType;
-  usePropagate: (value: T) => void;
   useListen: (callback: (value: T) => void) => void;
+  usePropagate: (value: T) => void;
 };
 ```
 
@@ -61,21 +67,26 @@ export function createPropagation<T>(): {
 
 ### Why not passing values via `useContext`?
 
-> (TBD)
+When propagating a value via `useContext`, subscribing nodes will be re-rendered. This behavior may not be desirable for events and certain type of scenarios.
 
-When propagating a value via `useContext`, the children could be re-rendered. For event, this behavior may not be desirable.
+### How to get response from the listener or wait for the listener to complete?
 
-### How to get response from the event listener?
+Modifies the passing value by following the [`FetchEvent.respondWith` pattern](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent/respondWith) or [`ExtendableEvent.waitUntil` pattern](https://developer.mozilla.org/en-US/docs/Web/API/ExtendableEvent/waitUntil).
 
-> (TBD)
+### How to re-render when triggered?
 
-Modifies the passing value by following the [`FetchEvent.respondWith` pattern](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent/respondWith).
+Use the following code snippet to save the value to a state, which will cause a re-render.
 
-### How to wait for the event listener to complete?
+```tsx
+const MyComponent = () => {
+  const [value, setValue] = useState();
 
-> (TBD)
+  // When triggered, saves the value to state.
+  useListen(value => setValue(value));
 
-Modifies the passing value by following the [`ExtendableEvent.waitUntil` pattern](https://developer.mozilla.org/en-US/docs/Web/API/ExtendableEvent/waitUntil).
+  return (<p>The value is {value}</p>.
+};
+```
 
 ## Contributions
 
