@@ -77,22 +77,30 @@ body:
         *Support will be slow or denied if a test case is not provided.*
       render: js
       value: |
-        import { renderHook } from '@testing-library/react';
-        import { usePropagate } from 'use-propagate';
+        import { act, renderHook } from '@testing-library/react';
+        import { createPropagation } from 'use-propagate';
 
-        test('simple scenario', () => {
-          // WHEN: Calling usePropagate() with 123.
-          const { result } = renderHook(
-            ({ input }) => {
-              const ref = usePropagate(input);
+        test('When a value is being propagated, listener should receive the value', () => {
+          const { Provider, useListen, usePropagate } = createPropagation();
+          const listener = jest.fn();
 
-              return ref.current;
+          const result = renderHook(
+            ({ value }) => {
+              const propagate = usePropagate();
+
+              useListen(listener);
+
+              typeof value === 'undefined' || propagate(value);
             },
-            { initialProps: { input: 123 } }
+            { initialProps: {}, wrapper: Provider }
           );
 
-          // THEN: It should return 123.
-          expect(result.current).toBe(123);
+          expect(listener).toHaveBeenCalledTimes(0);
+
+          act(() => result.rerender({ value: 'Hello, World!' }));
+
+          expect(listener).toHaveBeenCalledTimes(1);
+          expect(listener).toHaveBeenNthCalledWith(1, 'Hello, World!');
         });
   - type: input
     attributes:

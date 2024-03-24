@@ -36,10 +36,11 @@ describe('A propagation', () => {
     test('listener should not fire', () => expect(listener).toHaveBeenCalledTimes(0));
 
     describe('when usePropagate() is called', () => {
-      beforeEach(() => result.rerender({ value: 1 }));
+      beforeEach(() => result.rerender({ value: 'Hello, World!' }));
 
       test('listener should be called once', () => expect(listener).toHaveBeenCalledTimes(1));
-      test('listener should have been called with the value', () => expect(listener).toHaveBeenNthCalledWith(1, 1));
+      test('listener should have been called with the value', () =>
+        expect(listener).toHaveBeenNthCalledWith(1, 'Hello, World!'));
     });
   });
 });
