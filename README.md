@@ -75,7 +75,7 @@ Modifies the passing value by following the [`FetchEvent.respondWith`](https://d
 
 ### How to re-render when triggered?
 
-Use the following code snippet to save the value to a state, which will rerender the component.
+Use the following code snippet to save the value to a state, which will re-render the component.
 
 ```tsx
 const MyComponent = () => {
