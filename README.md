@@ -1,18 +1,18 @@
 # `use-propagate`
 
-Propagates an event to multiple subscribers using React hooks.
+Propagates a value to multiple nodes via callback function using React context and hooks.
 
 ## Background
 
-This pattern is useful for propagating an event to multiple nodes via a callback mechanism.
+This pattern is useful for triggering multiple nodes via callback function.
 
-Unlike setting a value in a [context](https://react.dev/reference/react/createContext), data will be passed via callback function. Subscriber can save the value into state and re-render as needed.
+Unlike setting a value in a [context](https://react.dev/reference/react/createContext), invoking a callback function will not trigger re-render. Subscribers can choose to save the value into its state and re-render as needed.
 
 ## How to use
 
 > [Live demo](https://compulim.github.io/use-propagate)
 
-The following code snippet would send the focus to the text box when the button is tapped.
+The following code snippet sends the focus to the text box when the button is tapped.
 
 ```tsx
 import { createPropagation } from 'use-propagate';
@@ -57,7 +57,7 @@ render(
 
 ```ts
 export function createPropagation<T>(): {
-  Provider: ComponentType;
+  Provider: ComponentType<{ children?: ReactNode | undefined }>;
   useListen: (callback: (value: T) => void) => void;
   usePropagate: (value: T) => void;
 };
