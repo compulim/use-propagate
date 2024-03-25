@@ -71,20 +71,20 @@ When propagating a value via `useContext`, subscribing nodes will be re-rendered
 
 ### How to get response from the listener or wait for the listener to complete?
 
-Modifies the passing value by following the [`FetchEvent.respondWith` pattern](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent/respondWith) or [`ExtendableEvent.waitUntil` pattern](https://developer.mozilla.org/en-US/docs/Web/API/ExtendableEvent/waitUntil).
+Modifies the passing value by following the [`FetchEvent.respondWith`](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent/respondWith) or [`ExtendableEvent.waitUntil`](https://developer.mozilla.org/en-US/docs/Web/API/ExtendableEvent/waitUntil) pattern.
 
 ### How to re-render when triggered?
 
-Use the following code snippet to save the value to a state, which will cause a re-render.
+Use the following code snippet to save the value to a state, which will rerender the component.
 
 ```tsx
 const MyComponent = () => {
-  const [value, setValue] = useState();
+  const [value, setValue] = useState<number>();
 
   // When triggered, saves the value to state.
-  useListen(value => setValue(value));
+  useListen(setValue);
 
-  return (<p>The value is {value}</p>.
+  return <p>The value is {value}.</p>
 };
 ```
 
