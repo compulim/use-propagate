@@ -81,7 +81,7 @@ body:
         import { createPropagation } from 'use-propagate';
 
         test('When a value is being propagated, listener should receive the value', () => {
-          const { Provider, useListen, usePropagate } = createPropagation();
+          const { useListen, usePropagate } = createPropagation();
           const listener = jest.fn();
 
           const result = renderHook(
@@ -92,7 +92,7 @@ body:
 
               typeof value === 'undefined' || propagate(value);
             },
-            { initialProps: {}, wrapper: Provider }
+            { initialProps: {} }
           );
 
           expect(listener).toHaveBeenCalledTimes(0);

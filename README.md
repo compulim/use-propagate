@@ -18,7 +18,7 @@ The following code snippet sends the focus to the text box when the button is ta
 import { createPropagation } from 'use-propagate';
 
 // Creates a namespace for the propagation. This should be placed outside of the component.
-const { Provider, useListen, usePropagate } = createPropagation<void>();
+const { useListen, usePropagate } = createPropagation<void>();
 
 const FocusButton = () => {
   const propagate = usePropagate();
@@ -46,10 +46,10 @@ const TextBox = () => {
 };
 
 render(
-  <Provider>
+  <Fragment>
     <FocusButton />
     <TextBox />
-  </Provider>
+  </Fragment>
 );
 ```
 
@@ -57,7 +57,6 @@ render(
 
 ```ts
 export function createPropagation<T>(): {
-  Provider: ComponentType<{ children?: ReactNode | undefined }>;
   useListen: (callback: (value: T) => void) => void;
   usePropagate: (value: T) => void;
 };
@@ -84,7 +83,7 @@ const MyComponent = () => {
   // When triggered, saves the value to state.
   useListen(setValue);
 
-  return <p>The value is {value}.</p>
+  return <p>The value is {value}.</p>;
 };
 ```
 
