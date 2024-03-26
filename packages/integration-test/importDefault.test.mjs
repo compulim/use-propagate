@@ -4,12 +4,11 @@ import { renderHook } from '@testing-library/react';
 import { createPropagation } from 'use-propagate';
 
 describe('A propagation', () => {
-  let Provider;
   let useListen;
   let usePropagate;
 
   beforeEach(() => {
-    ({ Provider, useListen, usePropagate } = createPropagation());
+    ({ useListen, usePropagate } = createPropagation());
   });
 
   describe('when render initially', () => {
@@ -29,7 +28,7 @@ describe('A propagation', () => {
             propagate(value);
           }
         },
-        { initialProps: {}, wrapper: Provider }
+        { initialProps: {} }
       );
     });
 

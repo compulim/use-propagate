@@ -1,43 +1,17 @@
 /** @jest-environment jsdom */
 
 import { act, render, renderHook, type RenderHookResult, type RenderResult } from '@testing-library/react';
-import { useCallback, type ComponentType } from 'react';
+import { Fragment, useCallback, type ComponentType } from 'react';
 import createPropagation from './createPropagation';
 
 type Props = { value?: number | undefined };
 
 describe('A propagation', () => {
-  let Provider: ReturnType<typeof createPropagation<number>>['Provider'];
   let useListen: ReturnType<typeof createPropagation<number>>['useListen'];
   let usePropagate: ReturnType<typeof createPropagation<number>>['usePropagate'];
 
   beforeEach(() => {
-    ({ Provider, useListen, usePropagate } = createPropagation<number>());
-  });
-
-  describe('', () => {
-    beforeEach(() => jest.spyOn(console, 'error').mockImplementation(jest.fn()));
-    afterEach(() => jest.restoreAllMocks());
-
-    test('calling useListen() without <Provider> should throw', () => {
-      expect(() => {
-        renderHook(() => {
-          useListen(() => {});
-
-          return false;
-        });
-      }).toThrow('This hook can only used under its corresponding <Provider>.');
-    });
-
-    test('calling usePropagate() without <Provider> should throw', () => {
-      expect(() => {
-        renderHook(() => {
-          usePropagate()(0);
-
-          return false;
-        });
-      }).toThrow('This hook can only used under its corresponding <Provider>.');
-    });
+    ({ useListen, usePropagate } = createPropagation<number>());
   });
 
   describe('when render initially', () => {
@@ -57,7 +31,7 @@ describe('A propagation', () => {
             propagate(value);
           }
         },
-        { initialProps: {}, wrapper: Provider }
+        { initialProps: {} }
       );
     });
 
@@ -100,11 +74,11 @@ describe('A propagation', () => {
 
       beforeEach(() => {
         result = render(
-          <Provider>
+          <Fragment>
             <Propagator />
             <Listener index={0} />
             <Listener index={1} />
-          </Provider>
+          </Fragment>
         );
       });
 
@@ -127,10 +101,10 @@ describe('A propagation', () => {
         describe('when a child is unmounted', () => {
           beforeEach(() =>
             result.rerender(
-              <Provider>
+              <Fragment>
                 <Propagator />
                 <Listener index={0} />
-              </Provider>
+              </Fragment>
             )
           );
 
