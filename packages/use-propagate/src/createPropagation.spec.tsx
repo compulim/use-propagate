@@ -1,8 +1,23 @@
 /** @jest-environment jsdom */
 
-import { act, render, renderHook, type RenderHookResult, type RenderResult } from '@testing-library/react';
-import { Fragment, useCallback, type ComponentType } from 'react';
+import { render, type RenderResult } from '@testing-library/react';
+import React, { Fragment, useCallback, type ComponentType } from 'react';
+
 import createPropagation from './createPropagation';
+
+const act: (fn: () => void) => void =
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require('@testing-library/react').renderHook ||
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require('@testing-library/react-hooks').renderHook;
+
+type RenderHookResult<T, P> = { rerender: (props?: P) => void; result: { current: T } };
+
+const renderHook: <T, P>(render: (props: P) => T, options?: { initialProps: P }) => RenderHookResult<T, P> =
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require('@testing-library/react').renderHook ||
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require('@testing-library/react-hooks').renderHook;
 
 type Props = { value?: number | undefined };
 

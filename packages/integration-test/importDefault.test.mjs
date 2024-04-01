@@ -1,7 +1,12 @@
 /** @jest-environment jsdom */
 
-import { renderHook } from '@testing-library/react';
 import { createPropagation } from 'use-propagate';
+
+const renderHook =
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require('@testing-library/react').renderHook ||
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require('@testing-library/react-hooks').renderHook;
 
 describe('A propagation', () => {
   let useListen;
