@@ -73,7 +73,7 @@ describe('A propagation', () => {
       Listener = ({ index }: { index: 0 | 1 }) => {
         useListen(value => fns[index](value));
 
-        return false;
+        return null;
       };
 
       Propagator = () => {
