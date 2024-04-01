@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { createPropagation } from 'use-propagate';
 
 const { Provider, useListen, usePropagate } = createPropagation<void>();
