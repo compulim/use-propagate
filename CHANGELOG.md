@@ -10,3 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - First public release
+
+### Changed
+
+- Relaxed peer dependencies requirements to `react@>=16.8.0`, by [@compulim](https://github.com/compulim) in PR [#1](https://github.com/compulim/use-propagate/pull/1)
+- Updated pull request validation to test against various React versions, in PR [#1](https://github.com/compulim/use-propagate/pull/1)
+   - Moved from JSX Runtime to JSX Classic to support testing against React 16
