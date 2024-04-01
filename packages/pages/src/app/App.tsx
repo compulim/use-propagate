@@ -1,7 +1,7 @@
-import React, { useCallback, useRef } from 'react';
+import React, { Fragment, useCallback, useRef } from 'react';
 import { createPropagation } from 'use-propagate';
 
-const { Provider, useListen, usePropagate } = createPropagation<void>();
+const { useListen, usePropagate } = createPropagation<void>();
 
 const FocusButton = () => {
   const propagate = usePropagate();
@@ -26,10 +26,10 @@ const TextBox = () => {
 };
 
 const App = () => (
-  <Provider>
+  <Fragment>
     <FocusButton />
     <TextBox />
-  </Provider>
+  </Fragment>
 );
 
 export default App;
