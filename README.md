@@ -68,6 +68,14 @@ export function createPropagation<T>(): {
 
 When propagating a value via `useContext`, subscribing nodes will be re-rendered. This behavior may not be desirable for events and certain type of scenarios.
 
+### Why I should not call propagate callback function during render-time?
+
+When the propagate callback function is called during rendering, a warning message will be printed and propagation will be stopped.
+
+This is a safety measure to prevent multiple re-render and potential deadlock situation if listeners save the value to a state and trigger another re-render.
+
+If listeners are controlled and would never trigger re-render, you can pass `allowPropagateDuringRender: true` option to ignore this safety measure.
+
 ### How to get response from the listener or wait for the listener to complete?
 
 Modifies the passing value by following the [`FetchEvent.respondWith`](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent/respondWith) or [`ExtendableEvent.waitUntil`](https://developer.mozilla.org/en-US/docs/Web/API/ExtendableEvent/waitUntil) pattern.
@@ -86,6 +94,8 @@ const MyComponent = () => {
   return <p>The value is {value}.</p>;
 };
 ```
+
+Please make sure the propagate callback function is not called during render as it could cause multiple re-render and potential deadlock situation.
 
 ## Contributions
 

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - First public release
+- Added `allowPropagateDuringRender` option as a safety measure to prevent multiple re-render, by [@compulim](https://github.com/compulim) in PR [#2](https://github.com/compulim/use-propagate/pull/2)
 
 ### Changed
 
