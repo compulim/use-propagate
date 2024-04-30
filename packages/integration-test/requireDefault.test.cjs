@@ -18,29 +18,22 @@ describe('A propagation', () => {
 
   describe('when render initially', () => {
     let listener;
-    let result;
+    let propagate;
 
     beforeEach(() => {
       listener = jest.fn();
 
-      result = renderHook(
-        ({ value }) => {
-          const propagate = usePropagate();
+      renderHook(() => {
+        propagate = usePropagate();
 
-          useListen(listener);
-
-          if (typeof value !== 'undefined') {
-            propagate(value);
-          }
-        },
-        { initialProps: {} }
-      );
+        useListen(listener);
+      });
     });
 
     test('listener should not fire', () => expect(listener).toHaveBeenCalledTimes(0));
 
     describe('when usePropagate() is called', () => {
-      beforeEach(() => result.rerender({ value: 'Hello, World!' }));
+      beforeEach(() => propagate('Hello, World!'));
 
       test('listener should be called once', () => expect(listener).toHaveBeenCalledTimes(1));
       test('listener should have been called with the value', () =>
