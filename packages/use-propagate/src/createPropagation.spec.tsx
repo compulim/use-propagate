@@ -31,32 +31,25 @@ describe('A propagation', () => {
 
   describe('when render initially', () => {
     let listener: jest.Mock<void, [number]>;
-    let result: RenderHookResult<void, Props>;
+    let propagate: (value: number) => void;
 
     beforeEach(() => {
       listener = jest.fn<void, [number]>();
 
-      result = renderHook<void, Props>(
-        ({ value }) => {
-          const propagate = usePropagate();
+      renderHook<void, Props>(() => {
+        propagate = usePropagate();
 
-          useListen(listener);
-
-          if (typeof value !== 'undefined') {
-            propagate(value);
-          }
-        },
-        { initialProps: {} }
-      );
+        useListen(listener);
+      });
     });
 
     test('listener should not fire', () => expect(listener).toHaveBeenCalledTimes(0));
 
     describe('when usePropagate() is called', () => {
-      beforeEach(() => result.rerender({ value: 1 }));
+      beforeEach(() => act(() => propagate(123)));
 
       test('listener should be called once', () => expect(listener).toHaveBeenCalledTimes(1));
-      test('listener should have been called with the value', () => expect(listener).toHaveBeenNthCalledWith(1, 1));
+      test('listener should have been called with the value', () => expect(listener).toHaveBeenNthCalledWith(1, 123));
     });
   });
 
@@ -137,6 +130,64 @@ describe('A propagation', () => {
           });
         });
       });
+    });
+  });
+
+  describe('when propagated during render-time', () => {
+    let listener: jest.Mock<void, [number]>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let spy: jest.SpyInstance<void, any[], any>;
+
+    beforeEach(() => {
+      spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      listener = jest.fn<void, [number]>();
+
+      renderHook<void, Props>(() => {
+        useListen(listener);
+        usePropagate()(123);
+      });
+    });
+
+    afterEach(() => spy.mockRestore());
+
+    test('should warn', () => {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenNthCalledWith(1, expect.stringMatching(/^use-propagate:\s/u));
+    });
+
+    test('should not call listener', () => expect(listener).toHaveBeenCalledTimes(0));
+  });
+});
+
+describe('A propagation with allowPropagateDuringRender set to true', () => {
+  let useListen: ReturnType<typeof createPropagation<number>>['useListen'];
+  let usePropagate: ReturnType<typeof createPropagation<number>>['usePropagate'];
+
+  beforeEach(() => {
+    ({ useListen, usePropagate } = createPropagation<number>({ allowPropagateDuringRender: true }));
+  });
+
+  describe('when propagated during render-time', () => {
+    let listener: jest.Mock<void, [number]>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let spy: jest.SpyInstance<void, any[], any>;
+
+    beforeEach(() => {
+      spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      listener = jest.fn<void, [number]>();
+
+      renderHook<void, Props>(() => {
+        useListen(listener);
+        usePropagate()(123);
+      });
+    });
+
+    afterEach(() => spy.mockRestore());
+
+    test('should not warn', () => expect(spy).toHaveBeenCalledTimes(0));
+    test('should have called the listener', () => {
+      expect(listener).toHaveBeenCalledTimes(1);
+      expect(listener).toHaveBeenNthCalledWith(1, 123);
     });
   });
 });
