@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking changes
+
+- Moved build tools from Babel to tsup/esbuild
+
 ### Changed
 
 - Streamlined code, by [@compulim](https://github.com/compulim) in PR [#5](https://github.com/compulim/use-propagate/pull/5)
