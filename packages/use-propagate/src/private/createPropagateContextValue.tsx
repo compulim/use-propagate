@@ -1,12 +1,12 @@
 import { Listener } from './createPropagation';
 
-export type PropagateContext<T> = Readonly<{
+export type PropagationContext<T> = Readonly<{
   addListener(listener: Listener<T>): void;
   removeListener(listener: Listener<T>): void;
   runListeners(value: T): void;
 }>;
 
-export function createPropagateContextValue<T>(): PropagateContext<T> {
+export function createPropagationContextValue<T>(): PropagationContext<T> {
   type Fn = Listener<T>;
   const listeners = new Set<Fn>();
   return {

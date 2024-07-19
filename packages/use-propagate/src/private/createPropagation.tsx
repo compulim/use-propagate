@@ -1,7 +1,7 @@
 import React from 'react';
 import { createContext, memo, useContext, useEffect, useLayoutEffect, useMemo, type ReactNode } from 'react';
 import { useRefFrom } from 'use-ref-from';
-import { PropagateContext, createPropagateContextValue } from './createPropagateContextValue';
+import { createPropagationContextValue, PropagationContext } from './createPropagateContextValue';
 
 export type Listener<T> = (value: T) => void;
 
@@ -19,12 +19,12 @@ export default function createPropagation<T>(init: Init = {}) {
   type Fn = Listener<T>;
 
   const { allowPropagateDuringRender } = init;
-  const context = createContext<PropagateContext<T>>(createPropagateContextValue());
+  const context = createContext<PropagationContext<T>>(createPropagationContextValue());
 
   let rendering: boolean = false;
 
   function PropagationScope({ children }: Readonly<{ children: ReactNode }>) {
-    const value = useMemo<PropagateContext<T>>(createPropagateContextValue, []);
+    const value = useMemo<PropagationContext<T>>(createPropagationContextValue, []);
     return <context.Provider value={value}>{children}</context.Provider>;
   }
 
