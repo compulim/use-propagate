@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Moved build tools from Babel to tsup/esbuild
 
+### Added
+
+- Introduced `PropagationScope` component for scoping propagations in the component tree, by [@OEvgeny](https://github.com/OEvgeny) in PR [#15](https://github.com/compulim/use-propagate/pull/15)
+  - Updated `useListen` and `usePropagate` hooks to use `PropagateContext`, by [@OEvgeny](https://github.com/OEvgeny) in PR [#15](https://github.com/compulim/use-propagate/pull/15)
+
 ### Changed
 
 - Streamlined code, by [@compulim](https://github.com/compulim) in PR [#5](https://github.com/compulim/use-propagate/pull/5)
