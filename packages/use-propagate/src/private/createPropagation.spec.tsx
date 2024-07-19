@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
 import { render, type RenderResult } from '@testing-library/react';
-import React, { useState, Fragment, useCallback, type ComponentType } from 'react';
+import React, { Fragment, useCallback, useState, type ComponentType } from 'react';
 
 import createPropagation from './createPropagation';
 
