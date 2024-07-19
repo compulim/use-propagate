@@ -1,7 +1,9 @@
-import { useEffect, useLayoutEffect, useMemo } from 'react';
+import React from 'react';
+import { createContext, memo, type ReactNode, useContext, useEffect, useLayoutEffect, useMemo } from 'react';
 import { useRefFrom } from 'use-ref-from';
+import { PropagateContext, createPropagateContextValue } from './createPropagateContextValue';
 
-type Listener<T> = (value: T) => void;
+export type Listener<T> = (value: T) => void;
 
 type Init = {
   /**
@@ -17,16 +19,20 @@ export default function createPropagation<T>(init: Init = {}) {
   type Fn = Listener<T>;
 
   const { allowPropagateDuringRender } = init;
-  const listeners: Set<Fn> = new Set();
-
-  const addListener = (listener: Fn): void => void listeners.add(listener);
-  const removeListener = (listener: Fn): void => void listeners.delete(listener);
+  const context = createContext<PropagateContext<T>>(createPropagateContextValue());
 
   let rendering: boolean = false;
 
+  function PropagationScope({ children }: Readonly<{ children: ReactNode }>) {
+    const value = useMemo<PropagateContext<T>>(createPropagateContextValue, []);
+    return <context.Provider value={value}>{children}</context.Provider>;
+  }
+
   return {
+    PropagationScope: memo(PropagationScope),
     useListen: (listener: Fn) => {
       const listenerRef = useRefFrom(listener);
+      const { addListener, removeListener } = useContext(context);
 
       const wrappingListener = useMemo(() => {
         const wrappingListener: Fn = value => listenerRef.current(value);
@@ -40,6 +46,7 @@ export default function createPropagation<T>(init: Init = {}) {
     },
     usePropagate: () => {
       rendering = true;
+      const { runListeners } = useContext(context);
 
       useLayoutEffect(() => {
         rendering = false;
@@ -52,7 +59,7 @@ export default function createPropagation<T>(init: Init = {}) {
           );
         }
 
-        listeners.forEach(listener => listener(value));
+        runListeners(value);
       };
     }
   };

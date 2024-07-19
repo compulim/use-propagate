@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
 import { render, type RenderResult } from '@testing-library/react';
-import React, { Fragment, useCallback, type ComponentType } from 'react';
+import React, { useState, Fragment, useCallback, type ComponentType } from 'react';
 
 import createPropagation from './createPropagation';
 
@@ -156,6 +156,191 @@ describe('A propagation', () => {
     });
 
     test('should not call listener', () => expect(listener).toHaveBeenCalledTimes(0));
+  });
+
+  describe('when using PropagationScope', () => {
+    let { PropagationScope, useListen, usePropagate } = createPropagation();
+
+    beforeEach(() => {
+      ({ PropagationScope, useListen, usePropagate } = createPropagation({ allowPropagateDuringRender: true }));
+    });
+
+    test('listeners in different scopes should not interfere', () => {
+      const listener1 = jest.fn();
+      const listener2 = jest.fn();
+
+      const Component = ({ scopeId }: Readonly<{ scopeId: number }>) => {
+        const propagate = usePropagate();
+        useListen(scopeId === 1 ? listener1 : listener2);
+
+        return (
+          <button data-testid={`button-${scopeId}`} onClick={() => propagate(scopeId)}>
+            Propagate {scopeId}
+          </button>
+        );
+      };
+
+      const { getByTestId } = render(
+        <Fragment>
+          <PropagationScope>
+            <Component scopeId={1} />
+          </PropagationScope>
+          <PropagationScope>
+            <Component scopeId={2} />
+          </PropagationScope>
+        </Fragment>
+      );
+
+      act(() => {
+        getByTestId('button-1').click();
+      });
+
+      expect(listener1).toHaveBeenCalledTimes(1);
+      expect(listener1).toHaveBeenCalledWith(1);
+      expect(listener2).not.toHaveBeenCalled();
+
+      act(() => {
+        getByTestId('button-2').click();
+      });
+
+      expect(listener1).toHaveBeenCalledTimes(1);
+      expect(listener2).toHaveBeenCalledTimes(1);
+      expect(listener2).toHaveBeenCalledWith(2);
+    });
+
+    test('multiple listeners in the same scope all receive propagated values', () => {
+      const listener1 = jest.fn();
+      const listener2 = jest.fn();
+      const listener3 = jest.fn();
+
+      const Component = () => {
+        useListen(listener1);
+        useListen(listener2);
+        useListen(listener3);
+        const propagate = usePropagate();
+
+        return <button onClick={() => propagate('test')}>Propagate</button>;
+      };
+
+      const { getByText } = render(
+        <PropagationScope>
+          <Component />
+        </PropagationScope>
+      );
+
+      act(() => {
+        getByText('Propagate').click();
+      });
+
+      expect(listener1).toHaveBeenCalledWith('test');
+      expect(listener2).toHaveBeenCalledWith('test');
+      expect(listener3).toHaveBeenCalledWith('test');
+    });
+
+    test('nested PropagationScopes should work independently', () => {
+      const outerListener = jest.fn();
+      const innerListener = jest.fn();
+
+      const OuterComponent = () => {
+        const propagate = usePropagate();
+        useListen(outerListener);
+
+        return (
+          <div>
+            <button data-testid="outer-button" onClick={() => propagate('outer')}>
+              Outer Propagate
+            </button>
+            <PropagationScope>
+              <InnerComponent />
+            </PropagationScope>
+          </div>
+        );
+      };
+
+      const InnerComponent = () => {
+        const propagate = usePropagate();
+        useListen(innerListener);
+
+        return (
+          <button data-testid="inner-button" onClick={() => propagate('inner')}>
+            Inner Propagate
+          </button>
+        );
+      };
+
+      const { getByTestId } = render(
+        <PropagationScope>
+          <OuterComponent />
+        </PropagationScope>
+      );
+
+      act(() => {
+        getByTestId('outer-button').click();
+      });
+
+      expect(outerListener).toHaveBeenCalledTimes(1);
+      expect(outerListener).toHaveBeenCalledWith('outer');
+      expect(innerListener).not.toHaveBeenCalled();
+
+      act(() => {
+        getByTestId('inner-button').click();
+      });
+
+      expect(outerListener).toHaveBeenCalledTimes(1);
+      expect(innerListener).toHaveBeenCalledTimes(1);
+      expect(innerListener).toHaveBeenCalledWith('inner');
+    });
+
+    test('listeners should be cleaned up when components unmount', () => {
+      const listener = jest.fn();
+
+      const ChildComponent = () => {
+        useListen(listener);
+        return <div>Child Component</div>;
+      };
+
+      const ParentComponent = () => {
+        const [showChild, setShowChild] = useState(true);
+        const propagate = usePropagate();
+
+        return (
+          <div>
+            <button onClick={() => setShowChild(!showChild)}>Toggle Child</button>
+            <button onClick={() => propagate('test')}>Propagate</button>
+            {showChild && <ChildComponent />}
+          </div>
+        );
+      };
+
+      const { getByText } = render(
+        <PropagationScope>
+          <ParentComponent />
+        </PropagationScope>
+      );
+
+      // Initial propagation, child is mounted
+      act(() => {
+        getByText('Propagate').click();
+      });
+      expect(listener).toHaveBeenCalledTimes(1);
+      expect(listener).toHaveBeenCalledWith('test');
+
+      // Unmount the child
+      act(() => {
+        getByText('Toggle Child').click();
+      });
+
+      // Reset the mock to clear previous calls
+      listener.mockClear();
+
+      // Propagate again, child is unmounted
+      act(() => {
+        getByText('Propagate').click();
+      });
+
+      // Listener should not be called as the component is unmounted
+      expect(listener).not.toHaveBeenCalled();
+    });
   });
 });
 
