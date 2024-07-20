@@ -23,7 +23,7 @@ export default function createPropagation<T>(init: Init = {}) {
 
   let rendering: boolean = false;
 
-  function PropagationScope({ children }: Readonly<{ children: ReactNode }>) {
+  function PropagationScope({ children }: Readonly<{ children?: ReactNode | undefined }>) {
     const value = useMemo<PropagationContext<T>>(createPropagationContextValue, []);
     return <context.Provider value={value}>{children}</context.Provider>;
   }

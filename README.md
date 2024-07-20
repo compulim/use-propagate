@@ -114,7 +114,7 @@ Note that `useListen` and `usePropagate` will use the nearest `PropagationScope`
 
 ```ts
 export function createPropagation<T>(options?: { allowPropagateDuringRender?: boolean }): {
-  PropagationScope: React.ComponentType<{ children: React.ReactNode }>;
+  PropagationScope: React.ComponentType<{ children?: React.ReactNode | undefined }>;
   useListen: (callback: (value: T) => void) => void;
   usePropagate: () => (value: T) => void;
 };
