@@ -1,9 +1,7 @@
 import React from 'react';
 import { createContext, memo, useContext, useEffect, useLayoutEffect, useMemo, type ReactNode } from 'react';
 import { useRefFrom } from 'use-ref-from';
-import { createPropagationContextValue, PropagationContext } from './createPropagateContextValue';
-
-export type Listener<T> = (value: T) => void;
+import createPropagationContextValue, { Listener, PropagationContext } from './createPropagateContextValue';
 
 type Init = {
   /**
