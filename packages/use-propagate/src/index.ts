@@ -1,3 +1,3 @@
-import createPropagation from './createPropagation';
+import createPropagation from './private/createPropagation';
 
 export { createPropagation };

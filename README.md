@@ -53,12 +53,70 @@ render(
 );
 ```
 
+### PropagationScope
+
+The `PropagationScope` component allows you to create isolated scopes for propagation. This is useful when you want to limit the scope of propagation to a specific part of your component tree.
+
+Here's an example of how to use `PropagationScope`:
+
+```tsx
+import { createPropagation } from 'use-propagate';
+
+const { useListen, usePropagate, PropagationScope } = createPropagation<string>();
+
+const ParentComponent = () => {
+  return (
+    <div>
+      <PropagationScope>
+        <ChildComponent1 />
+        <ChildComponent2 />
+      </PropagationScope>
+      <ChildComponent3 />
+    </div>
+  );
+};
+
+const ChildComponent1 = () => {
+  const propagate = usePropagate();
+  
+  return <button onClick={() => propagate('Hello')}>Say Hello</button>;
+};
+
+const ChildComponent2 = () => {
+  useListen((message) => {
+    console.log('ChildComponent2 received:', message);
+  });
+
+  return <div>Child 2</div>;
+};
+
+const ChildComponent3 = () => {
+  useListen((message) => {
+    console.log('ChildComponent3 received:', message);
+  });
+
+  return <div>Child 3</div>;
+};
+```
+
+In this example:
+
+- `ChildComponent1` and `ChildComponent2` are wrapped in a `PropagationScope`.
+- When the button in `ChildComponent1` is clicked, it will propagate the message "Hello".
+- `ChildComponent2` will receive this message and log it.
+- `ChildComponent3`, which is outside the `PropagationScope`, will not receive the message.
+
+Using `PropagationScope` allows you to create multiple isolated propagation contexts within your application. This can be particularly useful in larger applications where you want to avoid unintended propagation between different parts of your component tree.
+
+Note that `useListen` and `usePropagate` will use the nearest `PropagationScope` in the component tree. If there's no `PropagationScope` ancestor, they will use a default global scope.
+
 ## API
 
 ```ts
-export function createPropagation<T>(): {
+export function createPropagation<T>(options?: { allowPropagateDuringRender?: boolean }): {
+  PropagationScope: React.ComponentType<{ children?: React.ReactNode | undefined }>;
   useListen: (callback: (value: T) => void) => void;
-  usePropagate: (value: T) => void;
+  usePropagate: () => (value: T) => void;
 };
 ```
 
