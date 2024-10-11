@@ -1,3 +1,3 @@
-import createPropagation from './private/createPropagation';
+import createPropagation from './private/createPropagation.tsx';
 
 export { createPropagation };
