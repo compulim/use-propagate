@@ -11,5 +11,5 @@
     "target": "ESNext",
     "types": ["jest", "node"]
   },
-  "extends": "@tsconfig/strictest/tsconfig.json"
+  "extends": "./tsconfig.custom.json"
 }
