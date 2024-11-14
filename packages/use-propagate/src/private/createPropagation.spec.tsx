@@ -341,6 +341,32 @@ describe('A propagation', () => {
       // Listener should not be called as the component is unmounted
       expect(listener).not.toHaveBeenCalled();
     });
+
+    test('usePropagate should return stable function reference', () => {
+      const propagateRefs: Array<(value: number) => void> = [];
+
+      const Component = () => {
+        const propagate = usePropagate();
+        propagateRefs.push(propagate);
+        return null;
+      };
+
+      const { rerender } = render(
+        <PropagationScope>
+          <Component />
+        </PropagationScope>
+      );
+
+      // Force re-render
+      rerender(
+        <PropagationScope>
+          <Component />
+        </PropagationScope>
+      );
+
+      // The function reference should be stable across re-renders
+      expect(propagateRefs[0]).toBe(propagateRefs[1]);
+    });
   });
 });
 

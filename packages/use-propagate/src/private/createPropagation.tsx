@@ -1,4 +1,4 @@
-import React, { createContext, memo, useContext, useEffect, useLayoutEffect, useMemo, type ReactNode } from 'react';
+import React, { createContext, memo, useCallback, useContext, useEffect, useLayoutEffect, useMemo, type ReactNode } from 'react';
 import { useRefFrom } from 'use-ref-from';
 import createPropagationContextValue, {
   type Listener,
@@ -52,7 +52,7 @@ export default function createPropagation<T>(init: Init = {}) {
         rendering = false;
       });
 
-      return (value: T) => {
+      return useCallback((value: T) => {
         if (rendering && !allowPropagateDuringRender) {
           return console.warn(
             'use-propagate: The propagate callback function should not be called while rendering, ignoring the call.'
@@ -60,7 +60,7 @@ export default function createPropagation<T>(init: Init = {}) {
         }
 
         runListeners(value);
-      };
+      }, [runListeners]);
     }
   };
 }
