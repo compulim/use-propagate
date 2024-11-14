@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - [`prettier@3.3.3`](https://npmjs.com/package/prettier/v/3.3.3)
     - [`tsup@8.3.0`](https://npmjs.com/package/tsup/v/8.3.0)
     - [`typescript@5.6.3`](https://npmjs.com/package/typescript/v/5.6.3)
+- Fixed `usePropagate` hook to return a stable function reference across re-renders, in PR [#23](https://github.com/compulim/use-propagate/pull/23), by [@OEvgeny](https://github.com/OEvgeny)
 
 ## [0.2.0] - 2024-07-24
 
