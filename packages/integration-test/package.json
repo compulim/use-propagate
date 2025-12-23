@@ -13,7 +13,7 @@
     "precommit": "ESLINT_USE_FLAT_CONFIG=false eslint --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts ./",
     "pretest": "if test \"$CI\" = \"true\"; then npm run build; npm run docker -- --detach --wait; fi",
     "switch": "cat package.json | jq --arg SWITCH_NAME $SWITCH_NAME -r '(.[\"switch:\" + $SWITCH_NAME] // {}) as $TEMPLATE | .devDependencies += ($TEMPLATE.devDependencies // {}) | .dependencies += ($TEMPLATE.dependencies // {})' | tee ./package.json.tmp && mv ./package.json.tmp ./package.json",
-    "test": "node --import ./happy-dom-env.ts --test ${CI:---watch} **/*.{spec,test}.{[jt]s,[jt]sx,c[jt]s,m[jt]s}"
+    "test": "jest"
   },
   "author": "William Wong (https://github.com/compulim)",
   "license": "MIT",
@@ -49,11 +49,28 @@
     }
   },
   "localPeerDependencies": {
-    "use-propagate": "^0.0.0-0"
+    "use-propagate": "0.0.0-0"
+  },
+  "pinDependencies": {
+    "@types/react": [
+      "18"
+    ],
+    "@types/react-dom": [
+      "18"
+    ],
+    "react": [
+      "18"
+    ],
+    "react-dom": [
+      "18"
+    ]
   },
   "devDependencies": {
     "@babel/preset-env": "^7.25.8",
     "@babel/preset-react": "^7.25.7",
+    "@happy-dom/global-registrator": "^20.0.11",
+    "@happy-dom/jest-environment": "^20.0.11",
+    "@testduet/wait-for": "^0.1.1",
     "@testing-library/react": "^16.0.1",
     "@tsconfig/strictest": "^2.0.5",
     "@types/react": "^18.3.11",
@@ -66,6 +83,6 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
-    "use-propagate": "^0.0.0-0"
+    "use-propagate": "0.0.0-0"
   }
 }

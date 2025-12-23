@@ -47,8 +47,22 @@
       "react-dom": "18.0.0"
     }
   },
+  "pinDependencies": {
+    "@types/react": [
+      "18"
+    ],
+    "@types/react-dom": [
+      "18"
+    ],
+    "react": [
+      "18"
+    ],
+    "react-dom": [
+      "18"
+    ]
+  },
   "localPeerDependencies": {
-    "use-propagate": "^0.0.0-0"
+    "use-propagate": "0.0.0-0"
   },
   "devDependencies": {
     "@tsconfig/strictest": "^2.0.5",
@@ -60,6 +74,6 @@
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "use-propagate": "^0.0.0-0"
+    "use-propagate": "0.0.0-0"
   }
 }
