@@ -1,4 +1,4 @@
-/** @jest-environment jsdom */
+/// <reference types="jest" />
 
 import { render, type RenderResult } from '@testing-library/react';
 import React, { Fragment, useCallback, useState, type ComponentType } from 'react';
