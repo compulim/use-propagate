@@ -1,4 +1,4 @@
-/** @jest-environment jsdom */
+/// <reference types="jest" />
 
 const { createPropagation } = require('use-propagate');
 

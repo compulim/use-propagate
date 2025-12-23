@@ -1,4 +1,4 @@
-/** @jest-environment jsdom */
+/// <reference types="jest" />
 
 import { createPropagation } from 'use-propagate';
 
