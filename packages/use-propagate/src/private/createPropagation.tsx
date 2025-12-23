@@ -33,6 +33,8 @@ export default function createPropagation<T>(init: Init = {}) {
   let rendering: boolean = false;
 
   function PropagationScope({ children }: Readonly<{ children?: ReactNode | undefined }>) {
+    // First argument is intentionally not an arrow function but a reference to a function.
+    // eslint-disable-next-line react-hooks/use-memo
     const value = useMemo<PropagationContext<T>>(createPropagationContextValue, []);
     return <context.Provider value={value}>{children}</context.Provider>;
   }
@@ -49,9 +51,9 @@ export default function createPropagation<T>(init: Init = {}) {
         addListener(wrappingListener);
 
         return wrappingListener;
-      }, [listenerRef]);
+      }, [addListener, listenerRef]);
 
-      useEffect(() => () => removeListener(wrappingListener), [wrappingListener]);
+      useEffect(() => () => removeListener(wrappingListener), [removeListener, wrappingListener]);
     },
     usePropagate: () => {
       rendering = true;
