@@ -1,7 +1,7 @@
+import { act } from '@compulim/test-harness/act';
 import { renderHook } from '@compulim/test-harness/renderHook';
 import { expect } from 'expect';
 import { mock, test } from 'node:test';
-import { act } from '@testing-library/react';
 import { createPropagation } from 'use-propagate';
 
 test('When a value is being propagated, listener should receive the value', () => {
