@@ -1,25 +1,17 @@
-/// <reference types="jest" />
+import { act } from '@compulim/test-harness/act';
+import { cleanup, render, type RenderResult } from '@compulim/test-harness/render';
+import { renderHook } from '@compulim/test-harness/renderHook';
+import { expect } from 'expect';
+import { afterEach, beforeEach, describe, mock, test, type Mock } from 'node:test';
+import React, { type ComponentType } from 'react';
 
-import { render, type RenderResult } from '@testing-library/react';
-import React, { Fragment, useCallback, useState, type ComponentType } from 'react';
+import createPropagation from './createPropagation.tsx';
 
-import createPropagation from './createPropagation';
-
-const act: (fn: () => void) => void =
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require('@testing-library/react').renderHook ||
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require('@testing-library/react-hooks').renderHook;
-
-type RenderHookResult<T, P> = { rerender: (props?: P) => void; result: { current: T } };
-
-const renderHook: <T, P>(render: (props: P) => T, options?: { initialProps: P }) => RenderHookResult<T, P> =
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require('@testing-library/react').renderHook ||
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require('@testing-library/react-hooks').renderHook;
+const { Fragment, useCallback, useState } = React;
 
 type Props = { value?: number | undefined };
+
+afterEach(() => cleanup());
 
 describe('A propagation', () => {
   let useListen: ReturnType<typeof createPropagation<number>>['useListen'];
@@ -30,11 +22,11 @@ describe('A propagation', () => {
   });
 
   describe('when render initially', () => {
-    let listener: jest.Mock<void, [number]>;
+    let listener: Mock<(value: number) => void>;
     let propagate: (value: number) => void;
 
     beforeEach(() => {
-      listener = jest.fn<void, [number]>();
+      listener = mock.fn();
 
       renderHook<void, Props>(() => {
         propagate = usePropagate();
@@ -43,25 +35,28 @@ describe('A propagation', () => {
       });
     });
 
-    test('listener should not fire', () => expect(listener).toHaveBeenCalledTimes(0));
+    test('listener should not fire', () => expect(listener.mock.callCount()).toBe(0));
 
     describe('when usePropagate() is called', () => {
-      beforeEach(() => act(() => propagate(123)));
+      beforeEach(() => {
+        act(() => propagate(123));
+      });
 
-      test('listener should be called once', () => expect(listener).toHaveBeenCalledTimes(1));
-      test('listener should have been called with the value', () => expect(listener).toHaveBeenNthCalledWith(1, 123));
+      test('listener should be called once', () => expect(listener.mock.callCount()).toBe(1));
+      test('listener should have been called with the value', () =>
+        expect(listener.mock.calls[0]?.arguments).toEqual([123]));
     });
   });
 
   describe('when 2 children listening', () => {
     let count: number;
-    let fns: [jest.Mock<void, [number]>, jest.Mock<void, [number]>];
+    let fns: [Mock<(value: number) => void>, Mock<(value: number) => void>];
     let Listener: ComponentType<{ index: 0 | 1 }>;
     let Propagator: ComponentType<object>;
 
     beforeEach(() => {
       count = 0;
-      fns = [jest.fn<void, [number]>(), jest.fn<void, [number]>()];
+      fns = [mock.fn<(value: number) => void>(), mock.fn<(value: number) => void>()];
 
       Listener = ({ index }: { index: 0 | 1 }) => {
         useListen(value => fns[index](value));
@@ -91,19 +86,21 @@ describe('A propagation', () => {
       });
 
       test('listeners should not be called', () => {
-        expect(fns[0]).toHaveBeenCalledTimes(0);
-        expect(fns[1]).toHaveBeenCalledTimes(0);
+        expect(fns[0].mock.callCount()).toBe(0);
+        expect(fns[1].mock.callCount()).toBe(0);
       });
 
       describe('when usePropagate is called', () => {
-        beforeEach(() => act(() => result.queryByTestId('propagator')?.click()));
+        beforeEach(() => {
+          act(() => result.queryByTestId('propagator')?.click());
+        });
 
         test('listeners should be called once', () => {
-          expect(fns[0]).toHaveBeenCalledTimes(1);
-          expect(fns[0]).toHaveBeenNthCalledWith(1, 1);
+          expect(fns[0].mock.callCount()).toBe(1);
+          expect(fns[0].mock.calls[0]?.arguments).toEqual([1]);
 
-          expect(fns[1]).toHaveBeenCalledTimes(1);
-          expect(fns[1]).toHaveBeenNthCalledWith(1, 1);
+          expect(fns[1].mock.callCount()).toBe(1);
+          expect(fns[1].mock.calls[0]?.arguments).toEqual([1]);
         });
 
         describe('when a child is unmounted', () => {
@@ -117,15 +114,17 @@ describe('A propagation', () => {
           );
 
           describe('when usePropagate is called again', () => {
-            beforeEach(() => act(() => result.queryByTestId('propagator')?.click()));
+            beforeEach(() => {
+              act(() => result.queryByTestId('propagator')?.click());
+            });
 
             test('mounted listener should be called again', () => {
-              expect(fns[0]).toHaveBeenCalledTimes(2);
-              expect(fns[0]).toHaveBeenNthCalledWith(2, 2);
+              expect(fns[0].mock.callCount()).toBe(2);
+              expect(fns[0].mock.calls[1]?.arguments).toEqual([2]);
             });
 
             test('unmounted listener should not be called', () => {
-              expect(fns[1]).toHaveBeenCalledTimes(1);
+              expect(fns[1].mock.callCount()).toBe(1);
             });
           });
         });
@@ -134,13 +133,14 @@ describe('A propagation', () => {
   });
 
   describe('when propagated during render-time', () => {
-    let listener: jest.Mock<void, [number]>;
+    let listener: Mock<(value: number) => void>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let spy: jest.SpyInstance<void, any[], any>;
+    let spy: Mock<(...data: any[]) => void>;
 
     beforeEach(() => {
-      spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      listener = jest.fn<void, [number]>();
+      spy = mock.method(console, 'warn');
+      spy.mock.mockImplementation(() => {});
+      listener = mock.fn<(value: number) => void>();
 
       renderHook<void, Props>(() => {
         useListen(listener);
@@ -148,14 +148,14 @@ describe('A propagation', () => {
       });
     });
 
-    afterEach(() => spy.mockRestore());
+    afterEach(() => spy.mock.restore());
 
     test('should warn', () => {
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenNthCalledWith(1, expect.stringMatching(/^use-propagate:\s/u));
+      expect(spy.mock.callCount()).toBe(1);
+      expect(spy.mock.calls[0]?.arguments).toEqual([expect.stringMatching(/^use-propagate:\s/u)]);
     });
 
-    test('should not call listener', () => expect(listener).toHaveBeenCalledTimes(0));
+    test('should not call listener', () => expect(listener.mock.callCount()).toBe(0));
   });
 
   describe('when using PropagationScope', () => {
@@ -166,8 +166,8 @@ describe('A propagation', () => {
     });
 
     test('listeners in different scopes should not interfere', () => {
-      const listener1 = jest.fn();
-      const listener2 = jest.fn();
+      const listener1 = mock.fn();
+      const listener2 = mock.fn();
 
       const Component = ({ scopeId }: Readonly<{ scopeId: number }>) => {
         const propagate = usePropagate();
@@ -195,23 +195,23 @@ describe('A propagation', () => {
         getByTestId('button-1').click();
       });
 
-      expect(listener1).toHaveBeenCalledTimes(1);
-      expect(listener1).toHaveBeenCalledWith(1);
-      expect(listener2).not.toHaveBeenCalled();
+      expect(listener1.mock.callCount()).toBe(1);
+      expect(listener1.mock.callCount()).toBe(1);
+      expect(listener2.mock.callCount()).toBe(0);
 
       act(() => {
         getByTestId('button-2').click();
       });
 
-      expect(listener1).toHaveBeenCalledTimes(1);
-      expect(listener2).toHaveBeenCalledTimes(1);
-      expect(listener2).toHaveBeenCalledWith(2);
+      expect(listener1.mock.callCount()).toBe(1);
+      expect(listener2.mock.callCount()).toBe(1);
+      expect(listener2.mock.calls[0]?.arguments).toEqual([2]);
     });
 
     test('multiple listeners in the same scope all receive propagated values', () => {
-      const listener1 = jest.fn();
-      const listener2 = jest.fn();
-      const listener3 = jest.fn();
+      const listener1 = mock.fn();
+      const listener2 = mock.fn();
+      const listener3 = mock.fn();
 
       const Component = () => {
         useListen(listener1);
@@ -232,14 +232,14 @@ describe('A propagation', () => {
         getByText('Propagate').click();
       });
 
-      expect(listener1).toHaveBeenCalledWith('test');
-      expect(listener2).toHaveBeenCalledWith('test');
-      expect(listener3).toHaveBeenCalledWith('test');
+      expect(listener1.mock.calls[0]?.arguments).toEqual(['test']);
+      expect(listener2.mock.calls[0]?.arguments).toEqual(['test']);
+      expect(listener3.mock.calls[0]?.arguments).toEqual(['test']);
     });
 
     test('nested PropagationScopes should work independently', () => {
-      const outerListener = jest.fn();
-      const innerListener = jest.fn();
+      const outerListener = mock.fn();
+      const innerListener = mock.fn();
 
       const OuterComponent = () => {
         const propagate = usePropagate();
@@ -278,21 +278,21 @@ describe('A propagation', () => {
         getByTestId('outer-button').click();
       });
 
-      expect(outerListener).toHaveBeenCalledTimes(1);
-      expect(outerListener).toHaveBeenCalledWith('outer');
-      expect(innerListener).not.toHaveBeenCalled();
+      expect(outerListener.mock.callCount()).toBe(1);
+      expect(outerListener.mock.calls[0]?.arguments).toEqual(['outer']);
+      expect(innerListener.mock.callCount()).toBe(0);
 
       act(() => {
         getByTestId('inner-button').click();
       });
 
-      expect(outerListener).toHaveBeenCalledTimes(1);
-      expect(innerListener).toHaveBeenCalledTimes(1);
-      expect(innerListener).toHaveBeenCalledWith('inner');
+      expect(outerListener.mock.callCount()).toBe(1);
+      expect(innerListener.mock.callCount()).toBe(1);
+      expect(innerListener.mock.calls[0]?.arguments).toEqual(['inner']);
     });
 
     test('listeners should be cleaned up when components unmount', () => {
-      const listener = jest.fn();
+      const listener = mock.fn();
 
       const ChildComponent = () => {
         useListen(listener);
@@ -322,8 +322,8 @@ describe('A propagation', () => {
       act(() => {
         getByText('Propagate').click();
       });
-      expect(listener).toHaveBeenCalledTimes(1);
-      expect(listener).toHaveBeenCalledWith('test');
+      expect(listener.mock.callCount()).toBe(1);
+      expect(listener.mock.calls[0]?.arguments).toEqual(['test']);
 
       // Unmount the child
       act(() => {
@@ -331,7 +331,7 @@ describe('A propagation', () => {
       });
 
       // Reset the mock to clear previous calls
-      listener.mockClear();
+      listener.mock.resetCalls();
 
       // Propagate again, child is unmounted
       act(() => {
@@ -339,7 +339,7 @@ describe('A propagation', () => {
       });
 
       // Listener should not be called as the component is unmounted
-      expect(listener).not.toHaveBeenCalled();
+      expect(listener.mock.callCount()).toBe(0);
     });
 
     test('usePropagate should return stable function reference', () => {
@@ -379,13 +379,14 @@ describe('A propagation with allowPropagateDuringRender set to true', () => {
   });
 
   describe('when propagated during render-time', () => {
-    let listener: jest.Mock<void, [number]>;
+    let listener: Mock<(value: number) => void>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let spy: jest.SpyInstance<void, any[], any>;
+    let spy: Mock<(...data: any[]) => void>;
 
     beforeEach(() => {
-      spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      listener = jest.fn<void, [number]>();
+      spy = mock.method(console, 'warn');
+      spy.mock.mockImplementation(() => {});
+      listener = mock.fn<(value: number) => void>();
 
       renderHook<void, Props>(() => {
         useListen(listener);
@@ -393,12 +394,12 @@ describe('A propagation with allowPropagateDuringRender set to true', () => {
       });
     });
 
-    afterEach(() => spy.mockRestore());
+    afterEach(() => spy.mock.restore());
 
-    test('should not warn', () => expect(spy).toHaveBeenCalledTimes(0));
+    test('should not warn', () => expect(spy.mock.callCount()).toBe(0));
     test('should have called the listener', () => {
-      expect(listener).toHaveBeenCalledTimes(1);
-      expect(listener).toHaveBeenNthCalledWith(1, 123);
+      expect(listener.mock.callCount()).toBe(1);
+      expect(listener.mock.calls[0]?.arguments).toEqual([123]);
     });
   });
 });

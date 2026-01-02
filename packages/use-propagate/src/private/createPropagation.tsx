@@ -1,18 +1,11 @@
-import React, {
-  createContext,
-  memo,
-  useCallback,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  type ReactNode
-} from 'react';
+import React, { type ReactNode } from 'react';
 import { useRefFrom } from 'use-ref-from';
 import createPropagationContextValue, {
   type Listener,
   type PropagationContext
 } from './createPropagateContextValue.tsx';
+
+const { createContext, memo, useCallback, useContext, useEffect, useLayoutEffect, useMemo } = React;
 
 type Init = {
   /**
