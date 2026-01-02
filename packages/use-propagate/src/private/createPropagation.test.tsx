@@ -3,9 +3,11 @@ import { cleanup, render, type RenderResult } from '@compulim/test-harness/rende
 import { renderHook } from '@compulim/test-harness/renderHook';
 import { expect } from 'expect';
 import { afterEach, beforeEach, describe, mock, test, type Mock } from 'node:test';
-import React, { Fragment, useCallback, useState, type ComponentType } from 'react';
+import React, { type ComponentType } from 'react';
 
 import createPropagation from './createPropagation.tsx';
+
+const { Fragment, useCallback, useState } = React;
 
 type Props = { value?: number | undefined };
 
