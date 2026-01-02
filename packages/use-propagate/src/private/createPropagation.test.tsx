@@ -38,7 +38,9 @@ describe('A propagation', () => {
     test('listener should not fire', () => expect(listener.mock.callCount()).toBe(0));
 
     describe('when usePropagate() is called', () => {
-      beforeEach(() => act(() => propagate(123)));
+      beforeEach(() => {
+        act(() => propagate(123));
+      });
 
       test('listener should be called once', () => expect(listener.mock.callCount()).toBe(1));
       test('listener should have been called with the value', () =>
@@ -89,7 +91,9 @@ describe('A propagation', () => {
       });
 
       describe('when usePropagate is called', () => {
-        beforeEach(() => act(() => result.queryByTestId('propagator')?.click()));
+        beforeEach(() => {
+          act(() => result.queryByTestId('propagator')?.click());
+        });
 
         test('listeners should be called once', () => {
           expect(fns[0].mock.callCount()).toBe(1);
@@ -110,7 +114,9 @@ describe('A propagation', () => {
           );
 
           describe('when usePropagate is called again', () => {
-            beforeEach(() => act(() => result.queryByTestId('propagator')?.click()));
+            beforeEach(() => {
+              act(() => result.queryByTestId('propagator')?.click());
+            });
 
             test('mounted listener should be called again', () => {
               expect(fns[0].mock.callCount()).toBe(2);
