@@ -1,8 +1,14 @@
 {
-  "name": "use-propagate-integration-test",
+  "name": "@compulim/integration-test",
   "version": "0.0.0-0",
   "description": "",
   "private": true,
+  "files": [
+    "**/*.cjs",
+    "**/*.js",
+    "**/*.mjs",
+    "webDriver/**/*"
+  ],
   "scripts": {
     "build": "npm run build:copy && npm run build:custom --if-present",
     "build:copy": "mkdir -p ./webDriver/static/; SRC=$(node --eval=\"console.log(require('path').resolve(require('resolve-cwd')('use-propagate'), '../../dist'))\"); DEST=$(realpath ./webDriver/static); rm -rf $DEST; mkdir -p $DEST/js/; cp $SRC/** $DEST/js/",
@@ -97,17 +103,12 @@
     ]
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.25.8",
-    "@babel/preset-react": "^7.25.7",
-    "@happy-dom/global-registrator": "^20.0.11",
-    "@happy-dom/jest-environment": "^20.0.11",
-    "@testduet/wait-for": "^0.1.1",
-    "@testing-library/react": "^16.0.1",
+    "@compulim/test-harness": "0.0.0-0",
     "@tsconfig/strictest": "^2.0.5",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.2",
-    "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
+    "@types/react-test-renderer": "^19.1.0",
+    "expect": "^30.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-test-renderer": "^18.3.1",
@@ -115,13 +116,5 @@
   },
   "dependencies": {
     "use-propagate": "0.0.0-0"
-  },
-  "files": [
-    "**/*.cjs",
-    "**/*.js",
-    "**/*.mjs",
-    "webDriver/**/*"
-  ],
-  "exports": {},
-  "peerDependencies": {}
+  }
 }

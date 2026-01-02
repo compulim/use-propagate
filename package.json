@@ -6,10 +6,10 @@
   "author": "William Wong (https://github.com/compulim)",
   "license": "MIT",
   "workspaces": [
-    "packages/test-harness",
     "packages/use-propagate",
     "packages/integration-test",
-    "packages/pages"
+    "packages/pages",
+    "packages/test-harness"
   ],
   "scripts": {
     "build": "npm run build --if-present --workspaces",
@@ -29,19 +29,18 @@
     "switch:react-18": "SWITCH_NAME=react-18 npm run switch:_",
     "test": "npm run test --if-present --workspaces"
   },
+  "pinDependencies": {},
+  "localPeerDependencies": {},
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.50.1",
     "@typescript-eslint/parser": "^8.50.1",
     "eslint": "^9.39.2",
+    "eslint-import-resolver-node": "^0.3.9",
+    "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "prettier": "^3.7.4"
-  },
-  "dependencies": {},
-  "exports": {},
-  "localPeerDependencies": {},
-  "pinDependencies": {},
-  "peerDependencies": {}
+  }
 }

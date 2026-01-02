@@ -37,7 +37,7 @@
     "switch": "cat package.json | jq --arg SWITCH_NAME $SWITCH_NAME -r '(.[\"switch:\" + $SWITCH_NAME] // {}) as $TEMPLATE | .devDependencies += ($TEMPLATE.devDependencies // {}) | .dependencies += ($TEMPLATE.dependencies // {})' | tee ./package.json.tmp && mv ./package.json.tmp ./package.json",
     "test": "npm run test:unit && npm run test:types",
     "test:types": "node --experimental-strip-types --import @compulim/test-harness/test-types.import --test **/*.test-types.ts",
-    "test:unit": "node --experimental-strip-types --experimental-test-coverage --experimental-test-isolation=none --import @compulim/test-harness/happy-dom.import --import @compulim/test-harness/jsx.import --test --test-force-exit **/*.test.{cjs,cts,js,jsx,mjs,mts,ts,tsx}"
+    "test:unit": "node --experimental-strip-types --experimental-test-coverage --import @compulim/test-harness/happy-dom.import --import @compulim/test-harness/jsx.import --test --test-force-exit **/*.test.{cjs,cts,js,jsx,mjs,mts,ts,tsx}"
   },
   "repository": {
     "type": "git",
@@ -112,20 +112,13 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.25.8",
-    "@babel/preset-react": "^7.25.7",
-    "@babel/preset-typescript": "^7.25.7",
-    "@happy-dom/global-registrator": "^20.0.11",
-    "@happy-dom/jest-environment": "^20.0.11",
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/react": "^16.0.1",
+    "@compulim/test-harness": "0.0.0-0",
     "@tsconfig/recommended": "^1.0.7",
     "@tsconfig/strictest": "^2.0.5",
-    "@types/jest": "^29.5.13",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.2",
-    "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
+    "@types/react-test-renderer": "^18.3.1",
+    "expect": "^30.2.0",
     "publint": "^0.2.11",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -134,7 +127,7 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
-    "use-ref-from": "^0.1.0"
+    "use-ref-from": "^0.2.1"
   },
   "localPeerDependencies": {
     "@compulim/test-harness": "0.0.0-0"

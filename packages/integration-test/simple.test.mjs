@@ -1,17 +1,12 @@
-/** @jest-environment jsdom */
-
+import { renderHook } from '@compulim/test-harness/renderHook';
+import { expect } from 'expect';
+import { mock, test } from 'node:test';
 import { act } from '@testing-library/react';
 import { createPropagation } from 'use-propagate';
 
-const renderHook =
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require('@testing-library/react').renderHook ||
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require('@testing-library/react-hooks').renderHook;
-
 test('When a value is being propagated, listener should receive the value', () => {
   const { useListen, usePropagate } = createPropagation();
-  const listener = jest.fn();
+  const listener = mock.fn();
   let propagate;
 
   renderHook(() => {
@@ -20,10 +15,10 @@ test('When a value is being propagated, listener should receive the value', () =
     useListen(listener);
   });
 
-  expect(listener).toHaveBeenCalledTimes(0);
+  expect(listener.mock.callCount()).toBe(0);
 
   act(() => propagate('Hello, World!'));
 
-  expect(listener).toHaveBeenCalledTimes(1);
-  expect(listener).toHaveBeenNthCalledWith(1, 'Hello, World!');
+  expect(listener.mock.callCount()).toBe(1);
+  expect(listener.mock.calls[0]?.arguments).toEqual(['Hello, World!']);
 });

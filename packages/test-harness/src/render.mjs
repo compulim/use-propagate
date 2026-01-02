@@ -1,1 +1,1 @@
-export { render } from '@testing-library/react';
+export { cleanup, render } from '@testing-library/react';

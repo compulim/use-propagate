@@ -1,1 +1,6 @@
-module.exports = { render: require('@testing-library/react') };
+const pkg = require('@testing-library/react');
+
+module.exports = {
+  cleanup: pkg.cleanup,
+  render: pkg.render
+};

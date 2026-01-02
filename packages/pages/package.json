@@ -1,5 +1,5 @@
 {
-  "name": "use-propagate-pages",
+  "name": "@compulim/pages",
   "version": "0.0.0-0",
   "description": "",
   "private": true,
@@ -64,6 +64,7 @@
       "18"
     ]
   },
+  "peerDependencies": {},
   "localPeerDependencies": {
     "use-propagate": "0.0.0-0"
   },
@@ -78,7 +79,5 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "use-propagate": "0.0.0-0"
-  },
-  "exports": {},
-  "peerDependencies": {}
+  }
 }
