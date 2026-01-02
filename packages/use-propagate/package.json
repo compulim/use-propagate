@@ -95,13 +95,13 @@
     "@types/react-dom": [
       "18"
     ],
+    "@types/react-test-renderer": [
+      "18"
+    ],
     "react": [
       "18"
     ],
     "react-dom": [
-      "18"
-    ],
-    "@types/react-test-renderer": [
       "18"
     ],
     "react-test-renderer": [
@@ -110,6 +110,9 @@
   },
   "peerDependencies": {
     "react": ">=16.8.0"
+  },
+  "localPeerDependencies": {
+    "@compulim/test-harness": "0.0.0-0"
   },
   "devDependencies": {
     "@compulim/test-harness": "0.0.0-0",
@@ -128,8 +131,5 @@
   },
   "dependencies": {
     "use-ref-from": "^0.2.1"
-  },
-  "localPeerDependencies": {
-    "@compulim/test-harness": "0.0.0-0"
   }
 }
